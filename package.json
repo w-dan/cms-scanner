@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "json-query": "^2.2.2",
+    "jsonata": "^1.8.6",
+    "puppeteer": "^13.7.0"
+  }
+}
