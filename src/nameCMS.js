@@ -10,20 +10,28 @@ const input = fs
 .readdirSync('./data/')
 .filter((file) => file.endsWith('.json'));
 
-console.log('Using input: ' + input);
+console.log('[CMSName] Using input: ' + input);
 
 // checking JSON input files
 if(input.length > 1) { throw new FileNumberError('Expected one JSON file, found ' + input.length) };
 
-// hard-coding output file name for the time being
+// reading parameter file name and removing .json file extension
 const outFileName = input[0].split('.');
-const outFile = outFileName[0] + '.txt';
+outFileName.splice(outFileName.length-1, 1);
+
+// joining previous split name and adding .txt extension
+const outFile = outFileName.join('.') + '.txt';
+
+// extracting URL from parameter file name
+const urlSplit = input[0].split('-');
+const urlName = urlSplit[0];
 
 (async function main() {
-    try {
-        const testURL = 'http://museo.etsisi.upm.es';
+    try { 
+        const testURL = 'http://' + urlName;
+        
         // launch and go to cmsdetect
-        const browser = await puppeteer.launch();
+        const browser = await puppeteer.launch();   // add { headless: false } as parameter for visual chromium launch
         const page = await browser.newPage();
         await page.goto('https://cmsdetect.com/detect');
 
@@ -38,19 +46,25 @@ const outFile = outFileName[0] + '.txt';
         const grabCMS = await page.evaluate(() => {
             // currently, the desired result is inside some container-fluid inner-page div inside a header (h2) tag
             // which happens to be the first h2 tag, so querySelector will grab it (sensitive to site changes)
-            const cmsTag = document.querySelector('h2');
+            var cmsTag = document.querySelector('h2');
+            if(cmsTag == null) cmsTag = 'No CMS found for this site';
             return cmsTag.innerText;
         });
 
-        // evaluate function returns a string such as: {your-url} is built using {cms-name}
-        // trimming result to filter {cms-name} out (sensitive to changes since site output might change)
-        const resultWords = grabCMS.split(/\s+/);
-        const cmsName = resultWords[resultWords.length - 1];
+        if(grabCMS != null) {
+            // evaluate function returns a string such as: {your-url} is built using {cms-name}
+            // trimming result to filter {cms-name} out (sensitive to changes since site output might change)
+            const resultWords = grabCMS.split(/\s+/);
+            const cmsName = resultWords[resultWords.length - 1];
 
-        console.log(cmsName);
+            // Creates output file and writes result to it
+            fs.writeFileSync('./out/' + outFile, 'Site is using: ' + cmsName + '\n', 'UTF-8', {'flags': 'a'});
+        } else {
+            // Creates output file and writes result to it
+            fs.writeFileSync('./out/' + outFile, 'No CMS regognized for this site \n', 'UTF-8', {'flags': 'a'});
+        }
+
         await browser.close();
-
-        fs.writeFileSync('./out/' + outFile, 'Site is using: ' + cmsName + '\n', 'UTF-8', {'flags': 'a'});
     } catch(err) {
         console.log(err);
         return;

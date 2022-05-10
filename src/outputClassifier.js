@@ -17,15 +17,18 @@ try {
     .readdirSync('./data/')
     .filter((file) => file.endsWith('.json'));
 
-    console.log('Using input: ' + input);
+    console.log('[outputClassifier] Using input: ' + input);
     // even if the script makes sure only one file remains in the data folder, it's better to double
     // check, since the user may accidentally (or otherwise) move a file there before execution
     // the bash script will later empty the folder for the next execution
     if(input.length > 1) { throw new FileNumberError('Expected one JSON file, found ' + input.length) };
 
-    // hard-coding output file name for the time being
+    // reading parameter file name and removing .json file extension
     const outFileName = input[0].split('.');
-    const outFile = outFileName[0] + '.txt';
+    outFileName.splice(outFileName.length-1, 1);
+
+    // joining previous split name and adding .txt extension
+    const outFile = outFileName.join('.') + '.txt';
 
     // reading and parsing JSON data
     const rawData = fs.readFileSync('./data/' + input);
@@ -39,7 +42,7 @@ try {
     // where severity is higher than 'info'
     var outData = parsedData.filter(item => item.info.severity != 'info');
 
-    // deleting some fields
+    // deleting some bloaty fields
     outData.forEach((item) => {
         delete item.info.author;
     });
@@ -48,11 +51,8 @@ try {
 
     // after query, use this:
     // const outData = JSON.stringify(queryResult);
-    console.log(stringData);
     fs.appendFileSync('./out/' + outFile, stringData, 'UTF-8', {'flags': 'a'});
-    
-    console.log(typeof stringData);
-    console.log(outFile);
+    console.log('Done! Check out/' + outFile + ' for scan results');
 } catch(err) {
     console.log(err);
 }
