@@ -23,7 +23,7 @@ try {
     // the bash script will later empty the folder for the next execution
     if(input.length > 1) { throw new FileNumberError('Expected one JSON file, found ' + input.length) };
 
-    // reading parameter file name and removing .json file extension
+    // reading parameter file name and removing .json file extension, storing it in a string
     const outFileName = input[0].split('.');
     outFileName.splice(outFileName.length-1, 1);
 
@@ -52,6 +52,10 @@ try {
     // after query, use this:
     // const outData = JSON.stringify(queryResult);
     fs.appendFileSync('./out/' + outFile, stringData, 'UTF-8', {'flags': 'a'});
+
+    // also saving as JSON for script.js to make it into HTML
+    fs.appendFileSync('./filtered-JSON/' + input[0], stringData, 'UTF-8', {'flags': 'a'});
+
     console.log('Done! Check out/' + outFile + ' for scan results');
 } catch(err) {
     console.log(err);

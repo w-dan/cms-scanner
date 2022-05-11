@@ -43,9 +43,11 @@ rm raw-outputs/$out_file.json
 
 # need to make sure nuclei here actually returned something just in case, exit 0 if not
 
-# cleaning data (parameter) directory and moving newly generated .json file
+# cleaning data and filtered-JSON (parameter) directories and moving newly generated .json file
 rm -f data/*
+rm -f filtered-JSON/*
 
+# letting raw-outputs file stay for traceability when debugging
 cp raw-outputs/$out_file-clean.json data/$out_file.json
 
 echo "----- Step 2: detecting CMS -----"
@@ -54,5 +56,8 @@ echo
 
 echo "----- Step 3: generating output -----"
 node src/outputClassifier.js
+echo
+echo "----- Step 4: generating HTML output -----"
+node src/script.js
 echo
 echo Finishing execution...
