@@ -24,7 +24,7 @@ else
 	exit 0
 fi
 
-echo ">TARGETTING" $1
+echo ">TARGETTING $1"
 echo ">OUTPUT FILE: $out_file"
 echo
 echo "----- Step 1: scanning for vulnerabilities -----"
@@ -32,13 +32,14 @@ echo "----- Step 1: scanning for vulnerabilities -----"
 # nuclei call, putting output in json file with designated name
 # really fills the terminal with a lot of text but i'd rather make it as verbose as possible
 # future upgrade: verbose flag when running script
+docker run projectdiscovery/nuclei -update-templates -v
 docker run projectdiscovery/nuclei -target $1 -json > raw-outputs/$out_file.json
 echo
 echo "Generating JSON file..."
 echo
 
-# making the JSON file readable
-jq --slurp . < raw-outputs/$out_file.json > raw-outputs/$out_file-clean.json
+# making the JSON file readable (pretty)
+jq --slurp . < raw-outputs/$out_file.json > raw-outputs/$out_file-pretty.json
 rm raw-outputs/$out_file.json
 
 # need to make sure nuclei here actually returned something just in case, exit 0 if not
@@ -48,7 +49,10 @@ rm -f data/*
 rm -f filtered-JSON/*
 
 # letting raw-outputs file stay for traceability when debugging
-cp raw-outputs/$out_file-clean.json data/$out_file.json
+cp raw-outputs/$out_file-pretty.json data/$out_file.json
+
+# using sed filter to replace cve-id with just cve to avoid json query problems
+sed -i 's/cve-id/cve/g' data/$out_file.json
 
 echo "----- Step 2: detecting CMS -----"
 node src/nameCMS.js
