@@ -27,19 +27,15 @@ try {
     const outFileName = input[0].split('.');
     outFileName.splice(outFileName.length-1, 1);
 
-    // joining previous split name and adding .txt extension
-    const outFile = outFileName.join('.') + '.txt';
+    // joining previous split name and adding .txt and .json extensions for output
+    const outTXT = outFileName.join('.') + '.txt';
+    const outJSON = outFileName.join('.') + '.json';
 
     // reading and parsing JSON data
     const rawData = fs.readFileSync('./data/' + input);
     const parsedData = JSON.parse(rawData);                 // type: object
 
-    // extract, for each vulnerability:
-        // -template
-        // -description
-        // -severity
-        // -entire classification field (cve-id, cwe-id, cvss-metrics, cvss-score) into readable file
-    // where severity is higher than 'info'
+    // only vulnerabilities where severity is higher than 'info'
     var outData = parsedData.filter(item => item.info.severity != 'info');
 
     // deleting some bloaty fields
@@ -51,12 +47,11 @@ try {
 
     // after query, use this:
     // const outData = JSON.stringify(queryResult);
-    fs.appendFileSync('./out/' + outFile, stringData, 'UTF-8', {'flags': 'a'});
+    fs.appendFileSync('./out/' + outTXT, stringData, 'UTF-8', {'flags': 'a'});
 
     // also saving as JSON for script.js to make it into HTML
-    fs.appendFileSync('./filtered-JSON/' + input[0], stringData, 'UTF-8', {'flags': 'a'});
+    fs.appendFileSync('./filtered-JSON/' + outJSON, stringData, 'UTF-8', {'flags': 'a'});
 
-    console.log('Done! Check out/' + outFile + ' for scan results');
 } catch(err) {
     console.log(err);
 }
