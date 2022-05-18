@@ -23,13 +23,9 @@ try {
     // the bash script will later empty the folder for the next execution
     if(input.length > 1) { throw new FileNumberError('Expected one JSON file, found ' + input.length) };
 
-    // reading parameter file name and removing .json file extension, storing it in a string
-    const outFileName = input[0].split('.');
-    outFileName.splice(outFileName.length-1, 1);
-
-    // joining previous split name and adding .txt and .json extensions for output
-    const outTXT = outFileName.join('.') + '.txt';
-    const outJSON = outFileName.join('.') + '.json';
+    // reading parameter file name and storing it in a string
+    const outJSON = input[0].toString();
+    console.log(outJSON);
 
     // reading and parsing JSON data
     const rawData = fs.readFileSync('./data/' + input);
@@ -43,13 +39,10 @@ try {
         delete item.info.author;
     });
 
+    // making it pretty
     const stringData = JSON.stringify(outData, null, 2);
 
-    // after query, use this:
-    // const outData = JSON.stringify(queryResult);
-    fs.appendFileSync('./out/' + outTXT, stringData, 'UTF-8', {'flags': 'a'});
-
-    // also saving as JSON for script.js to make it into HTML
+    // saving as JSON for script.js to make it into HTML
     fs.appendFileSync('./filtered-JSON/' + outJSON, stringData, 'UTF-8', {'flags': 'a'});
 
 } catch(err) {

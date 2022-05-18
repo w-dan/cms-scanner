@@ -55,13 +55,12 @@ cp raw-outputs/$out_file-pretty.json data/$out_file.json
 sed -i 's/cve-id/cve/g' data/$out_file.json
 
 echo "----- Step 2: detecting CMS -----"
-node src/nameCMS.js
+# node src/nameCMS.js
 echo
 
-echo "----- Step 3: generating output -----"
+echo "----- Step 3: generating HTML output -----"
 node src/outputClassifier.js
-echo
-echo "----- Step 4: generating HTML output -----"
 node src/script.js
 echo
+
 echo Finishing execution...
