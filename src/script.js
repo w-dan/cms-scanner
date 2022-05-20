@@ -14,7 +14,6 @@ var input = fs
 .filter((file) => file.endsWith('.json'));
 
 
-
 // making sure script only gets one parameter
 if(input.length > 1) { throw new FileNumberError('Expected one JSON file, found ' + input.length) };
 
@@ -23,10 +22,7 @@ const outFileName = input[0].split('.');
 outFileName.splice(outFileName.length-1, 1);
 outFileName.join('.');
 
-
 console.log('Using input: ' + outFileName);
-
-
 
 // replacing .json with .html for name consistency, will be writing to that file
 const outFile = outFileName.join('.') + '.html';
