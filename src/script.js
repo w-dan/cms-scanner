@@ -22,7 +22,6 @@ const outFileName = input[0].split('.');
 outFileName.splice(outFileName.length-1, 1);
 outFileName.join('.');
 
-console.log('Using input: ' + outFileName);
 
 // replacing .json with .html for name consistency, will be writing to that file
 const outFile = outFileName.join('.') + '.html';
@@ -33,8 +32,9 @@ const parsedData = JSON.parse(rawData);                 // type: object
 const stringData = JSON.stringify(parsedData);
 
 // directly writing the HTML file with file system library
-fs.appendFileSync('./out/' + outFile, '<link rel="stylesheet" href="../src/styles.css">', 'UTF-8', {'flags': 'a'});
-fs.appendFileSync('./out/' + outFile, '<h1> Found vulnerabilities for ' + outFileName.join('.') + '</h1>', 'UTF-8', {'flags': 'a'});
+// embedding css with bash script to make the file portable, but use this line if it fails for some reason
+// fs.appendFileSync('./out/' + outFile, '<link rel="stylesheet" href="../src/styles.css">', 'UTF-8'); 
+fs.appendFileSync('./out/' + outFile, '<h1> Found vulnerabilities for ' + outFileName.join('.') + '</h1>', 'UTF-8');
 
 
 // dropped the library since it wouldn't read json arrays with no key
