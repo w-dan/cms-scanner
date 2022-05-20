@@ -24,6 +24,36 @@ else
 	exit 0
 fi
 
+# creating empty filtered-JSON, out, and data directories if they don't exist
+# out
+if [[ ! -d out ]]
+then
+	echo "Creating out directory..."
+	mkdir out
+fi
+
+# raw-outputs
+if [[ ! -d raw-outputs ]]
+then
+	echo "Creating raw outputs directory..."
+	mkdir raw-outputs
+fi
+
+# data
+if [[ ! -d data ]]
+then
+	echo "Creating data directory..."
+	mkdir data
+fi
+
+# out
+if [[ ! -d filtered-JSON ]]
+then
+	echo "Creating filtered-JSON directory..."
+	mkdir data
+fi
+
+
 echo ">TARGETTING $1"
 echo ">OUTPUT FILE: $out_file"
 echo
@@ -59,8 +89,11 @@ echo "----- Step 2: detecting CMS -----"
 echo
 
 echo "----- Step 3: generating HTML output -----"
+touch out/$out_file.html
 node src/outputClassifier.js
 node src/script.js
-echo
+
+cat src/styles.css >> $out_file.html
+echo $out_file.html
 
 echo Finishing execution...
